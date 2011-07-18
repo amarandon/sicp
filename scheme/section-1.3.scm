@@ -1,3 +1,34 @@
+(define (sum term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (+ (term a) result))))
+  (iter a 0))
+
+(define (accumulate combiner null-value term a next b)
+  (define (iter a result)
+    (if (> a b)
+      result
+      (iter (next a) (combiner result (term a)))))
+  (iter a null-value))
+
+(define (inc a) (+ a 1))
+(define (identity a) a)
+
+(define (sum-int a b)
+  (accumulate + 0 identity a inc b))
+
+(define (cube n) (* n n n))
+(define (sum-cube a b)
+  (accumulate + 0 cube a inc b))
+
+(define (sum-pi a b)
+  (accumulate + 0
+       (lambda (a) (/ 1.0 (* a (+ a 2))))
+       a
+       (lambda (a) (+ a 4))
+       b))
+
 (define (good-enough? a b)
   (< (abs (- a b)) 0.001))
 
