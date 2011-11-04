@@ -117,7 +117,82 @@
              e-elem
              k)))
 
+; Exercise 1.39
 (define (tan-cf x k)
   (cont-frac-iter (lambda (i) (if (= i 1) x (- (* x x))))
              (lambda (i) (- (* i 2) 1))
              k))
+
+; Section 1.3.4
+
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+
+(define (square x) (* x x))
+
+(define (cube-root x)
+  (fixed-point (average-damp (lambda (y) (/ x (square y))))
+               1.0))
+
+(define dx 0.000001)
+
+(define (deriv g)
+  (lambda (x)
+    (/ (- (g (+ x dx)) (g x))
+       dx)))
+
+(define (newtons-transform g)
+  (lambda (x) (- x (/ (g x)
+                      ((deriv g) x)))))
+
+(define (newtons-method g guess)
+  (fixed-point (newtons-transform g)
+               guess))
+
+(define (fixed-point-of-transform g transform guess)
+  (fixed-point (transform g) guess))
+
+(define (newtons-sqrt x)
+  (fixed-point-of-transform (lambda (y) (- (square y) x))
+                             newtons-transform
+                             1.0))
+(define (sqrt x)
+  (fixed-point-of-transform (lambda (y) (/ x y))
+                             average-damp
+                             1.0))
+; Exercise 1.40
+(define (cubic a b c)
+  (lambda (x)
+    (+ (cube x)
+       (* a (square x))
+       (* b x)
+       c)))
+
+; Exercise 1.41
+(define (double f)
+  (lambda (x)
+    (f (f x))))
+
+; Exercise 1.42
+(define (compose f g)
+  (lambda (x)
+    (f (g x))))
+
+; Exercise 1.43
+(define (repeated f n)
+  (define (iter f n result)
+    (if (= n 1)
+        result
+        (iter f (- n 1) (compose f result))))
+  (iter f n f))
+
+; Exercise 1.44
+(define (smooth f)
+  (lambda (x)
+    (/ (+ (f (- x dx))
+          (f x)
+          (f (+ x dx)))
+       3)))
+
+(define (n-fold-smoothed f n)
+  ((repeated smooth n) f))
