@@ -134,6 +134,15 @@
   (fixed-point (average-damp (lambda (y) (/ x (square y))))
                1.0))
 
+(define (fourth-root x)
+  (fixed-point (average-damp (average-damp (lambda (y) (/ x (cube y)))))
+               1.0))
+
+(define (pow x n)
+  (if (< n 2)
+      x
+      (* x (pow x (- n 1)))))
+  
 (define dx 0.000001)
 
 (define (deriv g)
@@ -196,3 +205,40 @@
 
 (define (n-fold-smoothed f n)
   ((repeated smooth n) f))
+
+; Exercise 1.45
+
+; log base n of x = log(x) / log(n)
+(define (log2 x)
+  (/ (log x) (log 2)))
+
+(define (nth-root x n)
+  (fixed-point 
+   ((repeated average-damp (floor (log2 n)))
+    (lambda (y) (/ x 
+                   (pow y (- n 1))))) 
+   1.0))
+
+; Exercise 1.46
+(define (iterative-improve good-enough? improve)
+  (define (iter guess)
+    (if (good-enough? guess)
+        guess
+        (iter (improve guess))))
+  (lambda (guess) (iter guess)))
+
+; Rewrite sqrt from section 1.1.7
+(define (sqrt2 x)
+  (define (good-enough? guess)
+    (< (abs (- (* guess guess) x)) 0.001))
+  (define (improve guess)
+    (average guess (/ x guess)))
+  ((iterative-improve good-enough? improve) 1.0))
+  
+; Rewrite fixed-point from sectin 1.2.3
+(define (fixed-point f first-guess)
+  (define (close-enough? a b)
+    (< (abs (- a b)) tolerance))
+  (define (close-enough-to-next? improve)
+    (lambda (guess) (close-enough? guess (improve guess))))
+  ((iterative-improve (close-enough-to-next? f) f) first-guess))
