@@ -79,3 +79,30 @@
   (display ",")
   (display (y-point p))
   (display ")"))
+
+
+; Exercise 2.3
+
+(define (make-rect segment1 segment2)
+  (cons segment1 segment2))
+
+(define (square x) (* x x))
+
+(define (length segment)
+  (sqrt (+ (square (- (x-point (start-segment segment))
+                      (x-point (end-segment segment))))
+           (square (- (y-point (start-segment segment))
+                      (y-point (end-segment segment)))))))
+
+(define (rect-height rect)
+  (length (car rect)))
+
+(define (rect-width rect)
+  (length (cdr rect)))
+
+(define (rect-perim rect)
+  (+ (* 2 (rect-width rect))
+     (* 2 (rect-height rect))))
+
+(define (rect-area rect)
+  (* (rect-width rect) (rect-height rect)))
