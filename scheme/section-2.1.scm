@@ -106,3 +106,25 @@
 
 (define (rect-area rect)
   (* (rect-width rect) (rect-height rect)))
+
+; Exercise 2.5
+
+(define (log-base base n)
+  (/ (log n) (log base)))
+
+(define (remove-multiple base n)
+  (if (= 0 (remainder n base))
+      (remove-multiple base (/ n base))
+      n))
+
+(define (cons a b)
+  (* (expt 2 a) (expt 3 b)))
+
+(define (select-element z wanted unwanted)
+  (round(log-base wanted (remove-multiple unwanted z))))
+
+(define (car z)
+  (select-element z 2 3))
+
+(define (cdr z)
+  (select-element z 3 2))
