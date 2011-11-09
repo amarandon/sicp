@@ -44,7 +44,6 @@
       (cons (/ (* n -1) g) (/ (* d -1) g))
       (cons (/ n g) (/ d g)))))
 
-
 ; Section 2.1.3
 ;(define (cons x y)
 ;  (define (dispatch m)
@@ -55,6 +54,69 @@
 
 ;(define (car z) (z 0))
 ;(define (cdr z) (z 1))
+
+; Exercise 2.2
+(define (make-point x y)
+  (cons x y))
+
+(define (x-point point)
+  (car point))
+
+(define (y-point point)
+  (cdr point))
+
+(define (make-segment start end)
+  (cons start end))
+
+(define (start-segment segment)
+  (car segment))
+
+(define (end-segment segment)
+  (cdr segment))
+
+(define (avg a b)
+  (/ (+ a b) 2))
+
+(define (coord-average selector segment)
+  (avg (selector (start-segment segment)) (selector (end-segment segment))))
+
+(define (midpoint-segment segment)
+  (make-point (coord-average x-point segment)
+              (coord-average y-point segment)))
+
+(define (print-point p)
+  (display "(")
+  (display (x-point p))
+  (display ",")
+  (display (y-point p))
+  (display ")"))
+
+
+; Exercise 2.3
+
+(define (make-rect segment1 segment2)
+  (cons segment1 segment2))
+
+(define (square x) (* x x))
+
+(define (length segment)
+  (sqrt (+ (square (- (x-point (start-segment segment))
+                      (x-point (end-segment segment))))
+           (square (- (y-point (start-segment segment))
+                      (y-point (end-segment segment)))))))
+
+(define (rect-height rect)
+  (length (car rect)))
+
+(define (rect-width rect)
+  (length (cdr rect)))
+
+(define (rect-perim rect)
+  (+ (* 2 (rect-width rect))
+     (* 2 (rect-height rect))))
+
+(define (rect-area rect)
+  (* (rect-width rect) (rect-height rect)))
 
 ; Exercise 2.4
 ;(define (cons x y)
