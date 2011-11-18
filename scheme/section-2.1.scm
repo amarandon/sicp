@@ -118,6 +118,7 @@
 (define (rect-area rect)
   (* (rect-width rect) (rect-height rect)))
 
+
 ; Exercise 2.4
 ;(define (cons x y)
 ;  (lambda (m) (m x y)))
@@ -127,6 +128,28 @@
 
 ;(define (cdr z)
 ;  (z (lambda (p q) q)))
+
+
+; Exercise 2.5
+;(define (log-base base n)
+;  (/ (log n) (log base)))
+
+;(define (remove-multiple base n)
+;  (if (= 0 (remainder n base))
+;      (remove-multiple base (/ n base))
+;      n))
+
+;(define (cons a b)
+;  (* (expt 2 a) (expt 3 b)))
+
+;(define (select-element z wanted unwanted)
+;  (round(log-base wanted (remove-multiple unwanted z))))
+
+;(define (car z)
+;  (select-element z 2 3))
+
+;(define (cdr z)
+;  (select-element z 3 2))
 
 ; Exercise 2.6
 (define zero 
@@ -151,12 +174,14 @@
     (lambda (x)
       ((m f) ((n f) x)))))
 
+
 ; Section 2.14
 
 (define (add-interval x y)
   (make-interval (+ (lower-bound x) (lower-bound y))
                  (+ (upper-bound x) (upper-bound y))))
 
+; Orginal definition, redefined in Ex. 2.10
 (define (mul-interval x y)
   (let ((p1 (* (lower-bound x) (lower-bound y)))
         (p2 (* (lower-bound x) (upper-bound y)))
@@ -165,10 +190,11 @@
     (make-interval (min p1 p2 p3 p4)
                    (max p1 p2 p3 p4))))
 
-(define (div-interval x y)
-  (mul-interval x
-                (make-interval (/ 1.0 (upper-bound y))
-                               (/ 1.0 (lower-bound y)))))
+; Orginal definition, redefined in Ex. 2.11
+;(define (div-interval x y)
+;  (mul-interval x
+;                (make-interval (/ 1.0 (upper-bound y))
+;                               (/ 1.0 (lower-bound y)))))
 
 ; Exercise 2.7
 
@@ -183,3 +209,78 @@
 (define (sub-interval x y)
   (make-interval (- (lower-bound x) (lower-bound y))
                  (- (upper-bound x) (upper-bound y))))
+
+; Exercise 2.10
+(define (span-zero? y)
+  (and (<= (lower-bound y) 0)
+       (>= (upper-bound y) 0)))
+(define (div-interval x y)
+  (if (span-zero? y)
+    (error "Interval can't span 0")
+    (mul-interval x
+                  (make-interval (/ 1.0 (upper-bound y))
+                                 (/ 1.0 (lower-bound y))))))
+
+; Exercise 2.11
+(define (mul-interval2 x y)
+  (let ((lo-x (lower-bound x))
+        (up-x (upper-bound x))
+        (lo-y (lower-bound y))
+        (up-y (upper-bound y)))
+    (cond ((and (<= lo-x 0)
+                (<= up-x 0)
+                (<= lo-y 0)
+                (<= up-y 0))
+           ; [-, -] * [-, -]
+           (make-interval (* up-x up-y) (* lo-x lo-y)))
+          ((and (>= lo-x 0)
+                (>= up-x 0)
+                (>= lo-y 0)
+                (>= up-y 0))
+           ; [+, +] * [+, +]
+           (make-interval (* up-x up-y) (* lo-x lo-y)))
+          ((and (<= lo-x 0)
+                (>= up-x 0)
+                (>= lo-y 0)
+                (>= up-y 0))
+           ; [-, +] * [+, +]
+           (make-interval (* lo-x up-y) (* up-x up-y)))
+          ((and (<= lo-x 0)
+                (<= up-x 0)
+                (>= lo-y 0)
+                (>= up-y 0))
+           ; [-, -] * [+, +]
+           (make-interval (* lo-x up-y) (* up-x lo-y)))
+          ((and (<= lo-x 0)
+                (<= up-x 0)
+                (<= lo-y 0)
+                (>= up-y 0))
+           ; [-, -] * [- , +]
+           (make-interval (* lo-x up-y) (* lo-x lo-y)))
+          ((and (<= lo-x 0)
+                (>= up-x 0)
+                (<= lo-y 0)
+                (<= up-y 0))
+           ; [-, +] * [-, -]
+           (make-interval (* up-x lo-y) (* lo-x lo-y)))
+          ((and (<= lo-x 0)
+                (>= up-x 0)
+                (<= lo-y 0)
+                (>= up-y 0))
+           ; [-, +] * [- , +]
+           (make-interval (min (* up-x lo-y)
+                               (* lo-x up-y))
+                          (max (* lo-x lo-y)
+                               (* up-x up-y))))
+          ((and (>= lo-x 0)
+                (>= up-x 0)
+                (<= lo-y 0)
+                (<= up-y 0))
+           ; [+, +] * [-, -]
+           (make-interval (* up-x lo-y) (* lo-x up-y)))
+          ((and (>= lo-x 0)
+                (>= up-x 0)
+                (<= lo-y 0)
+                (>= up-y 0))
+           ; [+, +] * [-, +]
+           (make-interval (* up-x lo-y) (* up-x up-y))))))
