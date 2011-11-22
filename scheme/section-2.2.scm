@@ -14,6 +14,26 @@
       (iter (cdr l) (cons (car l) a))))
   (iter l nil))
 
+; Exercise 2.19
+(define (no-more? coin-values)
+  (null? coin-values))
+
+(define (first-denomination coin-values)
+  (car coin-values))
+
+(define (except-first-denomination coin-values)
+  (cdr coin-values))
+
+(define (cc amount coin-values)
+  (cond ((= amount 0) 1)
+        ((or (< amount 0) (no-more? coin-values)) 0)
+        (else
+          (+ (cc amount
+                 (except-first-denomination coin-values))
+             (cc (- amount
+                    (first-denomination coin-values))
+                 coin-values)))))
+
 ; Exercise 2.20
 (define (same-parity head . tail)
   (let ((good? (if (odd? head)
