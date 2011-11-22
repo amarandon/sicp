@@ -48,3 +48,17 @@
     (cons head
           (reverse (iter tail nil)))))
 
+; Exercise 2.21
+(define (square-list items)
+  (if (null? items)
+    nil
+    (cons (* (car items) (car items)) (square-list (cdr items)))))
+
+(define (square-list-map items)
+  (map (lambda (x) (* x x)) items))
+
+; Exercise 2.23
+(define (for-each func items)
+  (cond ((null? items) #t)
+        ((func (car items))
+         (for-each func (cdr items)))))
