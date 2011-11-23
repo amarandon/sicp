@@ -62,3 +62,11 @@
   (cond ((null? items) #t)
         ((func (car items))
          (for-each func (cdr items)))))
+
+; Exercise 2.27
+(define (deep-reverse items)
+  (display items)(newline)
+  (cond ((null? items) nil)
+        ((not (pair? items)) items)
+        (else (append (deep-reverse (cdr items))
+                      (list (deep-reverse (car items)))))))
