@@ -65,8 +65,14 @@
 
 ; Exercise 2.27
 (define (deep-reverse items)
-  (display items)(newline)
   (cond ((null? items) nil)
         ((not (pair? items)) items)
         (else (append (deep-reverse (cdr items))
                       (list (deep-reverse (car items)))))))
+
+; Exercise 2.28
+(define (fringe items)
+  (cond ((null? items) nil)
+        ((not (pair? items)) (list items))
+        (else (append (fringe (car items))
+                      (fringe (cdr items))))))
