@@ -78,17 +78,17 @@
                       (fringe (cdr items))))))
 
 ; Exercise 2.29
-(define (make-mobile left right) (list left right))
+(define (make-mobile left right) (cons left right))
 
 (define (left-branch mobile) (car mobile))
 
-(define (right-branch mobile) (cadr mobile))
+(define (right-branch mobile) (cdr mobile))
 
-(define (make-branch length structure) (list length structure))
+(define (make-branch length structure) (cons length structure))
 
 (define (branch-length branch) (car branch))
 
-(define (branch-structure branch) (cadr branch))
+(define (branch-structure branch) (cdr branch))
 
 (define (total-weight mobile)
   (cond ((null? mobile) 0)
@@ -107,7 +107,7 @@
            (balanced? (branch-structure (left-branch mobile)))
            (balanced? (branch-structure (right-branch mobile))))))
 
-(define mobile1 ; unbalanced
+(define mobile1 ; unbalanced, total weight 15
   (make-mobile
     (make-branch 7 (make-mobile
                      (make-branch 4 1)
