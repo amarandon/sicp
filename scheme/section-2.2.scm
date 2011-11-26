@@ -127,3 +127,26 @@
                      (make-branch 3 2)
                      (make-branch 6 1)))))
 
+; Exercise 2.30
+(define (square x) (* x x))
+
+(define (square-tree tree)
+  (cond ((null? tree) nil)
+        ((not (pair? tree)) (square tree))
+        (else (cons (square-tree (car tree))
+                    (square-tree (cdr tree))))))
+
+(define (square-tree-map tree)
+  (map (lambda (tree)
+         (if (pair? tree)
+           (square-tree-map tree)
+           (square tree)))
+       tree))
+
+; Exercise 2.31
+(define (tree-map f tree)
+  (map (lambda (tree)
+         (if (pair? tree)
+           (tree-map f tree)
+           (f tree)))
+       tree))
