@@ -178,3 +178,14 @@
 
 (define (length seq)
   (accumulate (lambda (x y) (+ 1 y)) 0 seq))
+
+; Exercise 2.35
+(define (count-leaves t)
+  (accumulate +
+              0
+              (map (lambda (x)
+                     (if (pair? x)
+                       (count-leaves x)
+                       1))
+                   t)))
+
