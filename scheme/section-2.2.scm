@@ -150,3 +150,31 @@
            (tree-map f tree)
            (f tree)))
        tree))
+
+; Exercise 2.32
+;
+(define (subsets s)
+  (if (null? s)
+    (list nil)
+    (let ((rest (subsets (cdr s))))
+      (append rest (map (lambda (x) 
+                          (cons (car s) x)) 
+                        rest)))))
+
+; Exercise 2.33
+(define (accumulate op initial seq)
+  (if (null? seq)
+    initial
+    (op (car seq)
+        (accumulate op initial (cdr seq)))))
+
+(define (map p sequence)
+  (accumulate (lambda (x y) (cons (p x) y))
+                nil
+                sequence))
+
+(define (append seq1 seq2)
+  (accumulate cons seq2 seq1))
+
+(define (length seq)
+  (accumulate (lambda (x y) (+ 1 y)) 0 seq))
