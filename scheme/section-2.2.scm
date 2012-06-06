@@ -168,10 +168,10 @@
     (op (car seq)
         (accumulate op initial (cdr seq)))))
 
-(define (map p sequence)
-  (accumulate (lambda (x y) (cons (p x) y))
-                nil
-                sequence))
+;(define (map p sequence)
+;  (accumulate (lambda (x y) (cons (p x) y))
+;                nil
+;                sequence))
 
 (define (append seq1 seq2)
   (accumulate cons seq2 seq1))
@@ -195,3 +195,20 @@
              nil
              (cons (accumulate op init (map car seqs))
                    (accumulate-n op init (map cdr seqs)))))
+
+; Exercise 2.37
+(define (dot-product v w)
+  (accumulate + 0 (map * v w)))
+
+(define (matrix-*-vector m v)
+  (map (lambda (row) (dot-product row v)) m))
+
+(define (transpose m)
+  (accumulate-n cons nil m))
+
+(define (matrix-*-matrix m v)
+  (let ((cols (transpose m)))
+    (map (lambda (row)
+           (map (lambda (col) (dot-product row col))
+                cols))
+         m)))
