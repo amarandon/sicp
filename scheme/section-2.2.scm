@@ -211,3 +211,20 @@
     (map (lambda (row)
            (matrix-*-vector cols row))
          m)))
+
+; Exercise 2.38
+(define (fold-left op initial seq)
+  (define (iter result rest)
+    (if (null? rest)
+      result
+      (iter (op result (car rest))
+            (cdr rest))))
+  (iter initial seq))
+
+(define fold-right accumulate)
+
+(define (reverse-foldr seq)
+  (fold-right (lambda (x y) (append y (list x))) nil seq))
+
+(define (reverse-foldl seq)
+  (fold-left (lambda (x y) (cons y x)) nil seq))
