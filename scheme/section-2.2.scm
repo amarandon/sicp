@@ -278,3 +278,19 @@
 (define (prime-sum-pairs n)
   (map make-pair-sum 
        (filter prime-sum? (unique-pairs n))))
+
+; Exercise 2.41
+(define (unique-triples n)
+  (flatmap (lambda (i) 
+             (flatmap (lambda (j)
+                        (map (lambda (k) (list i j k))
+                             (enumerate-interval 1 (- j 1))))
+                      (enumerate-interval 1 (- i 1))))
+           (enumerate-interval 1 n)))
+
+(define (sum-equals seq int)
+  (= int (accumulate + 0 seq)))
+
+(define (int-sum-triples n s)
+  (filter (lambda (triple) (sum-equals triple s))
+          (unique-triples n)))
