@@ -1,5 +1,6 @@
-Follow sicp with Racket
-=======================
+# My answers to SCIP exercices
+
+## Execute with Racket
  
 Load sicp module at the begining of .scm file:
 
