@@ -78,7 +78,7 @@
 (define (addend s) (cadr s))
 
 (define (augend s)
-  (cond ((eq? (cddr s) nil) 0)
+  (cond ((null? (cddr s)) 0)
         (else (cons '+ (cddr s)))))
 
 (define (product? x)
@@ -87,7 +87,7 @@
 (define (multiplier p) (cadr p))
 
 (define (multiplicand p)
-  (cond ((eq? (cddr p) nil) 1)
+  (cond ((null? (cddr p)) 1)
         (else (cons '* (cddr p)))))
 
 (define (base p) (cadr p))
