@@ -181,3 +181,31 @@
          (cons
            (car set1)
            (dup-union-set (cdr set1) set2)))))
+
+; Sets as ordered lists
+(define (element-of-ordered-set? x set)
+  (cond ((null? set) false)
+        ((= (car set) x) true)
+        ((> (car set) x) false)
+        (else (element-of-ordered-set? x (cdr set)))))
+
+(define (intersection-ordered-set set1 set2)
+  (if (or (null? set1) (null? set2))
+    '()
+    (let ((x1 (car set1)) (x2 (car set2)))
+      (cond ((= x1 x2)
+             (cons x1
+                   (intersection-ordered-set (cdr set1) (cdr set2))))
+            ((< x1 x2)
+             (intersection-ordered-set (cdr set1) set2))
+            ((> x1 x2)
+             (intersection-ordered-set (cdr set2) set1))))))
+
+
+; Exercise 2.61
+(define (adjoin-ordered-set x set)
+  (cond ((null? set) (cons x '()))
+        ((equal? (car set) x) set)
+        ((< x (car set)) (cons x set))
+        (else
+          (cons (car set) (adjoin-ordered-set x (cdr set))))))
