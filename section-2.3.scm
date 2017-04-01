@@ -225,3 +225,118 @@
                   ((< x2 x1)
                    (cons x2
                          (union-ordered-set (cdr set2) set1))))))))
+
+; Sets as binary trees
+(define (entry tree) (car tree))
+
+(define (left-branch tree) (cadr tree))
+
+(define (right-branch tree) (caddr tree))
+
+(define (make-tree entry left right)
+  (list entry left right))
+
+(define (element-of-tree-set? x set)
+  (cond ((null? set) false)
+        ((= x (entry set)) true)
+        ((< x (entry set))
+         (element-of-set? x (left-branch set)))
+        ((> x (entry set))
+         (element-of-set? x (right-branch set)))))
+
+(define (adjoin-tree-set x set)
+  (cond ((null? set) (make-tree x '() '()))
+        ((= x (entry set)) set)
+        ((< x (entry set))
+         (make-tree (entry set)
+                    (adjoin-tree-set x (left-branch set))
+                    (right-branch set)))
+        ((> x (entry set))
+         (make-tree (entry set)
+                    (left-branch set)
+                    (adjoin-tree-set x (right-branch set))))))
+
+; Exercise 2.63
+(define (tree->list-1 tree)
+  (if (null? tree)
+    '()
+    (append (tree->list-1 (left-branch tree))
+            (cons (entry tree)
+                  (tree->list-1 (right-branch tree))))))
+
+(define (tree->list-2 tree)
+  (define (copy-to-list tree result-list)
+      (if (null? tree)
+        result-list
+        (copy-to-list (left-branch tree)
+                      (cons (entry tree)
+                            (copy-to-list (right-branch tree)
+                                          result-list)))))
+  (copy-to-list tree '()))
+
+; Testing trees from Figure 2.16
+(define example-tree-1
+  (make-tree 7
+             (make-tree 3
+                        (make-tree 1 nil nil)
+                        (make-tree 5 nil nil))
+             (make-tree 9
+                        nil
+                        (make-tree 11 nil nil))))
+
+(define example-tree-2
+  (make-tree 3
+             (make-tree 1 nil nil)
+             (make-tree 7
+                        (make-tree 5 nil nil)
+                        (make-tree 9 nil
+                                   (make-tree 11 nil nil)))))
+
+(define example-tree-3
+  (make-tree 5
+             (make-tree 3
+                        (make-tree 1 nil nil)
+                        nil)
+             (make-tree 9
+                        (make-tree 7 nil nil)
+                        (make-tree 11 nil nil))))
+
+; Both tree->list-1 and tree->list-2 produce the same result. However
+; tree->list-1 uses the append function which does more work than cons.
+; Therefore tree->list-2 will grow more slowly than tree->list-1.
+
+; Exercise 2.64
+(define (list->tree elements)
+  (car (partial-tree  elements (length elements))))
+
+(define (partial-tree elements n)
+  (if (= n 0)
+    (cons '() elements)
+    (let ((left-size (quotient (- n 1) 2)))
+      (let ((left-result (partial-tree elements left-size)))
+        (let ((left-tree (car left-result))
+              (non-left-elements (cdr left-result))
+              (right-size (- n (+ left-size 1))))
+          (let ((this-entry (car non-left-elements))
+                (right-result (partial-tree (cdr non-left-elements)
+                                            right-size)))
+            (let ((right-tree (car right-result))
+                  (remaining-elements (cdr right-result)))
+              (cons (make-tree this-entry left-tree right-tree)
+                    remaining-elements))))))))
+
+; partial-tree identifies the entry of the partial tree. To do this, it takes
+; the element at the middle of the list, or just before the middle, in the case
+; of a list with an even number of elements. It calls itself recursively with
+; the elements before and after that element to build respectively the right
+; and left branches of the tree.
+;
+; Let's draw the tree produced by list->tree for the list (1 3 5 7 8 11)
+;
+;        5
+;       / \
+;      /   \
+;     /     \
+;    1       8
+;     \     / \
+;      3   7   11
