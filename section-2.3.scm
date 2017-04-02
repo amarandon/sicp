@@ -8,25 +8,25 @@
 
 ; Exercise 2.53
 
-(list 'a 'b 'c)
-; '(a b c)
-
-(list (list 'george))
-; '('(george))
-
-(cdr '((x1 x2) (y1 y2)))
-; '('(y1 y2))
-
-(cadr '((x1 x2) (y1 y2)))
-; '(y1 y2)
-
-(pair? (car '(a short list)))
-; #f
-
-(memq 'red '((red shoes) (blue socks)))
-; #f
-
-(memq 'red '(red shoes blue socks))
+; (list 'a 'b 'c)
+; ; '(a b c)
+;
+; (list (list 'george))
+; ; '('(george))
+;
+; (cdr '((x1 x2) (y1 y2)))
+; ; '('(y1 y2))
+;
+; (cadr '((x1 x2) (y1 y2)))
+; ; '(y1 y2)
+;
+; (pair? (car '(a short list)))
+; ; #f
+;
+; (memq 'red '((red shoes) (blue socks)))
+; ; #f
+;
+; (memq 'red '(red shoes blue socks))
 ; '(red shoes blue socks)
 
 
@@ -348,3 +348,122 @@
         ((= given-key (car set-of-records)) (car set-of-records))
         ((< given-key (car set-of-records)) (lookup given-key (cadr set-of-records)))
         ((> given-key (car set-of-records)) (lookup given-key (caddr set-of-records)))))
+
+; Section 2.3.4 - Huffman Encoding Trees
+
+(define (make-leaf symbol weight)
+  (list 'leaf symbol weight))
+
+(define (leaf? object)
+  (eq? (car object) 'leaf))
+
+(define (symbol-leaf leaf)
+  (cadr leaf))
+
+(define (weight-leaf leaf)
+  (caddr leaf))
+
+(define (make-code-tree left-branch right-branch)
+  (list left-branch
+        right-branch
+        (append (symbols left-branch) (symbols right-branch))
+        (+ (weight left-branch) (weight right-branch))))
+
+(define (huf-left-branch tree)
+  (car tree))
+
+(define (huf-right-branch tree)
+  (cadr tree))
+
+(define (symbols tree)
+  (if (leaf? tree)
+    (list (symbol-leaf tree))
+    (caddr tree)))
+
+(define (weight tree)
+  (if (leaf? tree)
+    (weight-leaf tree)
+    (cadddr tree)))
+
+(define (choose-branch bit tree)
+  (cond ((= bit 0) (huf-left-branch tree))
+        ((= bit 1) (huf-right-branch tree))
+        (else (error "bad bit -- CHOOSE-BRANCH" bit))))
+
+
+(define (decode bits tree)
+  (define (decode-1 bits current-branch)
+      (if (null? bits)
+        '()
+        (let ((bit (car bits)))
+          (let ((next-branch (choose-branch bit current-branch)))
+            (if (leaf? next-branch)
+              (cons (symbol-leaf next-branch) (decode-1 (cdr bits) tree))
+              (decode-1 (cdr bits) next-branch))))))
+  (decode-1 bits tree))
+
+; (define (decode bits tree)
+;   (if (null? bits)
+;     '()
+;     (let ((bit (car bits)))
+;       (let ((next-branch (choose-branch bit tree)))
+;         (if (leaf? next-branch)
+;           (cons (symbol-leaf next-branch) (decode (cdr bits) tree))
+;           (decode (cdr bits) next-branch))))))
+;
+(define (huf-adjoin-set x set)
+  (cond ((null? set)
+         (list x))
+        ((< (weight x) (weight (car set)))
+         (cons x set))
+        (else
+          (cons (car set) (huf-adjoin-set x (cdr set))))))
+
+(define (make-leaf-set pairs)
+  (if (null? pairs)
+    '()
+    (let ((pair (car pairs)))
+      (huf-adjoin-set (make-leaf (car pair)
+                             (cadr pair))
+                      (make-leaf-set (cdr pairs))))))
+
+; Exercise 2.67
+
+(define hello-tree
+  (make-code-tree
+      (make-code-tree
+        (make-leaf 'H 1)
+        (make-leaf 'E 1))
+      (make-code-tree
+        (make-leaf 'L 1)
+        (make-leaf 'O 2))))
+
+(define hello-message '(0 0 0 1 1 0 1 0 1 1))
+
+; (decode hello-message hello-tree)
+; gives '(h e l l o)
+
+; Exercise 2.68
+
+(define (encode message tree)
+  (if (null? message)
+    '()
+    (append (encode-symbol (car message) tree)
+            (encode (cdr message) tree))))
+
+(define (encode-symbol symbol current-branch)
+  (cond ((and (leaf? current-branch)
+              (element-of-set? symbol (symbols current-branch)))
+         '())
+        ((element-of-set? symbol
+                          (symbols (huf-left-branch current-branch)))
+         (cons 0 (encode-symbol symbol (huf-left-branch current-branch))))
+        ((element-of-set? symbol
+                          (symbols (huf-right-branch current-branch)))
+         (cons 1 (encode-symbol symbol (huf-right-branch current-branch))))
+        (else (error "Symbol not in the tree at all"))))
+
+(if (not (equal? (encode (decode hello-message hello-tree)
+                         hello-tree)
+                 hello-message))
+  (error "Encode / decode failed"))
