@@ -475,19 +475,24 @@
 
 
 (define (successive-merge nodes)
-  (if (= (length nodes) 1)
+  (if (null? (cdr nodes))
     (car nodes)
     (successive-merge (append (cddr nodes)
                               (list (make-code-tree
                                       (car nodes)
                                       (cadr nodes)))))))
 
-(define pairs (list '(h 1) '(e 1) '(l 2) '(o 1)))
+(define pairs (list '(h 1) '(e 3) '(l 3) '(o 2) '(p 2)))
 (define generated-tree
   (generate-huffman-tree pairs))
 
-(if (not (equal? (decode (encode '(h e l l o)
-                                 generated-tree)
-                         generated-tree)
-                 '(h e l l o)))
+(define greeting '(h e l l o p e o p l e))
+(define encoded-greeting (encode greeting generated-tree))
+
+(if (not (equal? (decode encoded-greeting generated-tree)
+                 greeting))
   (error "Encode / decode failed"))
+
+(if (>= (length encoded-greeting)
+        (* 8 (length greeting)))
+  (error "Encoded data isn't smaller than original"))
