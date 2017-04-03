@@ -467,3 +467,27 @@
                          hello-tree)
                  hello-message))
   (error "Encode / decode failed"))
+
+; Exercise 2.69
+
+(define (generate-huffman-tree pairs)
+  (successive-merge (make-leaf-set pairs)))
+
+
+(define (successive-merge nodes)
+  (if (= (length nodes) 1)
+    (car nodes)
+    (successive-merge (append (cddr nodes)
+                              (list (make-code-tree
+                                      (car nodes)
+                                      (cadr nodes)))))))
+
+(define pairs (list '(h 1) '(e 1) '(l 2) '(o 1)))
+(define generated-tree
+  (generate-huffman-tree pairs))
+
+(if (not (equal? (decode (encode '(h e l l o)
+                                 generated-tree)
+                         generated-tree)
+                 '(h e l l o)))
+  (error "Encode / decode failed"))
