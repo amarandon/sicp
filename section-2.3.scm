@@ -496,3 +496,30 @@
 (if (>= (length encoded-greeting)
         (* 8 (length greeting)))
   (error "Encoded data isn't smaller than original"))
+
+; Exercise 2.70
+
+(define rock-song-pairs 
+  (list '(a 2) '(boom 1) '(get 2) '(job 2)
+        '(na 16) '(sha 3) '(yip 9) '(wah 1)))
+
+(define rock-song-tree
+  (generate-huffman-tree rock-song-pairs))
+
+(define rock-song-message '(
+    get a job
+    sha na na na na na na na na
+    get a job
+    sha na na na na na na na na
+    wah yip yip yip yip yip yip yip yip yip
+    sha boom
+))
+
+(define rock-song-encoded (encode rock-song-message rock-song-tree))
+
+; Bits required for the encoding
+; (length rock-song-encoded) --> 108
+
+; Smaller number of bits needes to encode with a fixed length encoding
+; 8 symbols, number of bits per symbol = log2(8)
+; (* 8 (length rock-song-message)) --> 288
