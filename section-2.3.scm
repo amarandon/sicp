@@ -240,9 +240,9 @@
   (cond ((null? set) false)
         ((= x (entry set)) true)
         ((< x (entry set))
-         (element-of-set? x (left-branch set)))
+         (element-of-ordered-set? x (left-branch set)))
         ((> x (entry set))
-         (element-of-set? x (right-branch set)))))
+         (element-of-ordered-set? x (right-branch set)))))
 
 (define (adjoin-tree-set x set)
   (cond ((null? set) (make-tree x '() '()))
@@ -520,6 +520,16 @@
 ; Bits required for the encoding
 ; (length rock-song-encoded) --> 108
 
-; Smaller number of bits needes to encode with a fixed length encoding
-; 8 symbols, number of bits per symbol = log2(8)
-; (* 8 (length rock-song-message)) --> 288
+; Smaller number of bits needed to encode with a fixed length encoding
+; 8 symbols, number of bits per symbol = log₂(8) = 3
+; (* 3 (length rock-song-message)) --> 108
+
+; Exercise 2.71
+
+; Most frequent symbol is always encoded in 1 bit
+; Least frequent symbol is always encoded n-1 bits
+
+; Exercise 2.72
+
+; Order of growth for most frequent symbole O(1)
+; Order of growth for least frequent symbole O(n²)
