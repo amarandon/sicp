@@ -477,10 +477,10 @@
 (define (successive-merge nodes)
   (if (null? (cdr nodes))
     (car nodes)
-    (successive-merge (append (cddr nodes)
-                              (list (make-code-tree
-                                      (car nodes)
-                                      (cadr nodes)))))))
+    (successive-merge (huf-adjoin-set (make-code-tree
+                                        (car nodes)
+                                        (cadr nodes))
+                                      (cddr nodes)))))
 
 (define pairs (list '(h 1) '(e 3) '(l 3) '(o 2) '(p 2)))
 (define generated-tree
@@ -518,7 +518,7 @@
 (define rock-song-encoded (encode rock-song-message rock-song-tree))
 
 ; Bits required for the encoding
-; (length rock-song-encoded) --> 108
+; (length rock-song-encoded) --> 84
 
 ; Smaller number of bits needed to encode with a fixed length encoding
 ; 8 symbols, number of bits per symbol = log₂(8) = 3
