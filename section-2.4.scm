@@ -101,10 +101,49 @@
                        (deriv (base exp) var)))
   (put 'deriv '(**) deriv))
 
-(install-exponent-package)
+; (install-exponent-package)
 ; 
 ; c. We would need to swap the first two arguments of the put method when registering procedures :
 ;
 ; For example for product we would register the derivation procedure like this: 
 ;
 ; (put '(*) 'deriv deriv))
+
+; Exercise 2.75
+(define (make-from-mag-angle r a)
+  (define (dispatch op)
+    (cond ((eq? op 'real-part)
+            (* r (cos a)))
+          ((eq? op 'imag-part)
+            (* r (sin a)))
+          ((eq? op 'magnitude) r)
+          ((eq? op 'angle) a)
+          (else
+            (error "Unknown op -- make-from-real-imag" op))))
+  dispatch)
+
+; Exercise 2.76
+
+; Explicit dispatching
+;   add new type: add a conditional branch to each operation
+;   add new operation: add a procedure that deals with all existing types
+; Data-directed style
+;   add new type: create a new procedure to install the package
+;                 call it to install the package
+;   add new operation: add operation to each package
+;                      register new operation in each package
+;                      define new generic operation that dispatches to the package
+; Message-passing
+;   add new type: create a new procedure representiong the type
+;   add new operation: add operation to each existing procedure
+;
+; Conclusion: message-passing is most approriate when new types must often be
+; added.  Explicit dispatching is most appropriate when new operations must
+; often be added.
+;
+; Correction: it's not very clear here what is the best answer. It's probably
+; the answer by torinmr at http://community.schemewiki.org/?sicp-ex-2.76 which
+; says that data-directed solves both, but it need to be implemented
+; differently from the code in the book so not 100% convincing easier.
+; Anyway the good thing to take away from this exercise is the Expression
+; Problem: http://wiki.c2.com/?ExpressionProblem
